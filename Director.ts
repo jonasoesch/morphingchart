@@ -173,3 +173,7 @@ interface Step {
     to:number
     draw:Drawable
 }
+
+export class JuxtaposedDirector extends Director {
+
+}
