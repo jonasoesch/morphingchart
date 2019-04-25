@@ -17,6 +17,7 @@ interface Scale extends Function {
     domain:Function 
 }
 
+// Submodule test
 export abstract class Chart implements Drawable {
     _name:string
     _data:any
