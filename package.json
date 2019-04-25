@@ -1,0 +1,22 @@
+{
+  "name": "scrollytelling",
+  "version": "0.1.0",
+  "description": "Morphable charts with d3",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonasoesch/scrollytelling.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jonasoesch/scrollytelling/issues"
+  },
+  "homepage": "https://github.com/jonasoesch/scrollytelling#readme",
+  "dependencies": {
+    "d3": "^5.9.2"
+  }
+}
