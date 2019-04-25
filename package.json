@@ -1,5 +1,5 @@
 {
-  "name": "scrollytelling",
+  "name": "morphingchart",
   "version": "0.1.0",
   "description": "Morphable charts with d3",
   "main": "./dist/index.js",
