@@ -1,4 +1,4 @@
-import {Named} from "Definitions"
+import {Named} from "./Definitions"
 
 export function buildMapWithName(list:Named[], buildMethod:Function):Map<string, any> {
         let m = new Map()

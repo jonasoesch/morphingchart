@@ -1,3 +1,4 @@
+import * as d3 from "d3"
 import * as interpolatePath from './interpolation/interpolatePath'
 import {Annotation} from './Annotation'
 import {CharacterDefinition, AnnotationDefinition} from "./Definitions"

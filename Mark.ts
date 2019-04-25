@@ -9,7 +9,7 @@ export class Character {
     private _color:string = "pink"
     private _annotations:Annotation[]
 
-    public path(xScale:Scale, yScale:Scale, data:[]) {
+    public path(xScale:Scale, yScale:Scale, data:any) {
         return "a path" 
     }
 
