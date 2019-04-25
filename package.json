@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jonasoesch/scrollytelling.git"
+    "url": "git+https://github.com/jonasoesch/morphingchart.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jonasoesch/scrollytelling/issues"
+    "url": "https://github.com/jonasoesch/morphingchart/issues"
   },
-  "homepage": "https://github.com/jonasoesch/scrollytelling#readme",
+  "homepage": "https://github.com/jonasoesch/morphingchart#readme",
   "dependencies": {
     "d3": "^5.9.2"
   }
