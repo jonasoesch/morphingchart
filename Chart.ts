@@ -156,6 +156,10 @@ export abstract class Chart implements Drawable {
         if(document.getElementById(this.name)) {
             return document.getElementById(this.name)
         } else {
+            d3.select("body")
+                .append("section")
+                .attr("id", this.name)
+                .attr("class", "Graph")
             throw new Error(`Don't know where to draw the chart with name ${this.name}`)
         }
     }
