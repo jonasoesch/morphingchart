@@ -17,6 +17,7 @@ export class MorphingChart implements Drawable {
     stage:d3.Selection<any, any, any, any>
     characters:MorphingCharacter[]
     position:number = 0
+    initialCoordinates:{top:number, left:number}
 
 
     constructor(chartDef:MorphingChartDefinition) {
@@ -35,6 +36,7 @@ export class MorphingChart implements Drawable {
     private initStage() {
         this.insertChart()
         this.setDimensions()
+        this.setInitialCoordinates()
     }
 
 
@@ -43,6 +45,15 @@ export class MorphingChart implements Drawable {
         this.stage
             .attr("width", this.from.width)
             .attr("height", this.from.height)
+    }
+
+
+    private setInitialCoordinates() {
+	    let rect = this.stage.node().getBoundingClientRect()
+        this.initialCoordinates = {
+            left: rect.left,
+            top: rect.top
+        }
     }
 
 
@@ -90,13 +101,33 @@ export class MorphingChart implements Drawable {
     draw() {
         this.hide()
         this.characters.forEach( c => c.atPosition(this.position).draw() )
+        this.stage.attr("transform", `translate(${this.coordinates.left}, ${this.coordinates.top})`)
     }
+
+
+    drawCharacters() {
+        this.draw() 
+    }
+
+
+    drawScene() {}
+
     hide() {
         this.stage.selectAll("g *").remove()
     } 
+    hideCharacters(){}
+    hideScene(){}
 
 
     unhide() {
+    }
+
+
+    get coordinates():{left:number, top:number} {
+        return {
+            top: d3.interpolate(this.from.coordinates.top, this.to.coordinates.top)(this.position) - this.initialCoordinates.top,
+            left: d3.interpolate(this.from.coordinates.left, this.to.coordinates.left)(this.position) - this.initialCoordinates.left,
+        }     
     }
 
 }

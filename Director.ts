@@ -6,7 +6,7 @@ import {FadingChart} from "./FadingChart"
 import {StepDefinition} from "./Definitions"
 
 
-export class Director {
+export abstract class Director {
     storyboard:Step[] = []
     timer:Date = new Date()
     logTimer:Date = new Date()
@@ -14,11 +14,11 @@ export class Director {
     logger:Logger
 
     constructor(stepDefs:StepDefinition[]) {
-       this.lastScrollTop = window.scrollY;
-       this.logger = new Logger()
-        
+        this.lastScrollTop = window.scrollY;
+        this.logger = new Logger()
+
         this.storyboard = this.buildSteps(stepDefs)
-        
+
         // Checks if 
         if (window.requestAnimationFrame) {
             try {
@@ -27,9 +27,11 @@ export class Director {
                 this.logger.error("An unspecified error has occured")
             }
         }
-
         // Send log every 5 seconds
         setInterval(() => this.save(), 5 * 1000);
+
+        // Initialize
+        this.drawAll(window.scrollY)
         //setInterval(() => this.alive(), 20 * 1000)
     }
 
@@ -79,25 +81,18 @@ export class Director {
      * Draws every drawable in the storyboard that should
      * currently be visible. Hides all the others.
      **/
-    public drawAll(offset:number) {
-    this.storyboard.forEach( (step) => this.hide(step.draw) )
-    this.storyboard.forEach( (step) => {
-            if (offset > step.from && offset <= step.to) {
-                this.draw(step.draw, this.howFar(step, offset)) 
-            }
-        })
-    }
+    public abstract drawAll(offset:number):void
 
 
-    private buildSteps(stepDefs:StepDefinition[]) {
-        return stepDefs.map( (stepDef) => {
-            return {
-                from: stepDef.from,
-                to: stepDef.to,
-                draw: stepDef.draw
-            }
-        }) 
-    }
+        private buildSteps(stepDefs:StepDefinition[]) {
+            return stepDefs.map( (stepDef) => {
+                return {
+                    from: stepDef.from,
+                    to: stepDef.to,
+                    draw: stepDef.draw
+                }
+            }) 
+        }
 
 
     /**
@@ -123,7 +118,7 @@ export class Director {
         return d3.easePolyInOut(howFar) 
     }
 
-   private save() {
+    private save() {
         this.logger.send()
     }
 
@@ -137,19 +132,12 @@ export class Director {
      * If yes, calls `atPoint()` and passes the relative position (calculated in
      * the `howFar()`-method). Then it draws the `Drawable`.
      **/
-    private draw(chart:Drawable, howFar:number) {
-        this.logger.animation(chart.name, howFar)
-        if(chart instanceof MorphingChart || chart instanceof FadingChart) {
-            chart.atPosition(howFar).draw() 
-        } else {
-            chart.draw() 
+    protected abstract draw(chart:Drawable, howFar:number):void
+
+
+        hide(chart:Drawable) {
+            chart.hide() 
         }
-
-    }
-
-    hide(chart:Drawable) {
-        chart.hide() 
-    }
 
 
     /**
@@ -168,6 +156,29 @@ export class Director {
 }
 
 
+export class SuperposedDirector extends Director {
+
+    public drawAll(offset:number) {
+        this.storyboard.forEach( (step) => this.hide(step.draw) )
+        this.storyboard.forEach( (step) => {
+            if (offset > step.from && offset <= step.to) {
+                this.draw(step.draw, this.howFar(step, offset)) 
+            }
+        })
+    }
+
+    protected draw(chart:Drawable, howFar:number) {
+        this.logger.animation(chart.name, howFar)
+        if(chart instanceof MorphingChart || chart instanceof FadingChart) {
+            chart.atPosition(howFar).draw() 
+        } else {
+            chart.draw() 
+        }
+
+    }
+}
+
+
 interface Step {
     from:number
     to:number
@@ -176,4 +187,57 @@ interface Step {
 
 export class JuxtaposedDirector extends Director {
 
+    public drawAll(offset:number) {
+        //this.storyboard.forEach( (step) => this.hide(step.draw) )
+        this.storyboard.forEach( (step) => {
+            if (offset > step.to) {
+                this.drawChart(step.draw) 
+                this.hideMorphingChart(step.draw)
+            }
+            if (offset > step.from && offset <= step.to) {
+                this.draw(step.draw, this.howFar(step, offset)) 
+            }
+            if(offset < step.from) {
+                this.drawChartScene(step.draw)
+                this.hideMorphingChart(step.draw)
+            }
+        })
+    }
+
+
+    protected draw(chart:Drawable, howFar:number) {
+        this.logger.animation(chart.name, howFar)
+        if(chart instanceof MorphingChart || chart instanceof FadingChart) {
+            chart.atPosition(howFar).drawCharacters() 
+        } else {
+            chart.draw() 
+        }
+
+    }
+
+    protected drawChart(chart:Drawable) {
+        if(!(chart instanceof MorphingChart) && !(chart instanceof FadingChart)) {
+            chart.draw() 
+        }
+    }
+
+
+    protected drawChartScene(chart:Drawable) {
+        if(!(chart instanceof MorphingChart) && !(chart instanceof FadingChart)) {
+            chart.hideCharacters()
+            chart.drawScene() 
+        }
+    }
+    protected drawMorphingChart(chart:Drawable, howFar:number) {
+        this.logger.animation(chart.name, howFar)
+        if(chart instanceof MorphingChart || chart instanceof FadingChart) {
+            chart.atPosition(howFar).drawCharacters() 
+        }
+    }
+
+    protected hideMorphingChart(chart:Drawable) {
+        if(chart instanceof MorphingChart || chart instanceof FadingChart) {
+            chart.hide()
+        }
+    }
 }

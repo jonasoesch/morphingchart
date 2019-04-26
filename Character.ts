@@ -43,8 +43,12 @@ export abstract class Character {
     }
     abstract drawAnnotation(annotation:Annotation):void
 
-        public abstract draw():void
+    public abstract draw():void
     protected abstract pathGenerator():Function
+
+    public hide() {
+        this.stage.selectAll("*").remove()
+    }
 
     get path() {
         throwIfEmpty(this.data, `No data for ${this.name}`)

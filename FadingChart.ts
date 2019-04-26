@@ -30,8 +30,17 @@ export class FadingChart implements Drawable {
         this.to.stage.style("opacity", this.position)
         this.from.stage.style("opacity", 1-this.position)
     }
+
+    drawCharacters() {
+        this.draw()
+    }
+
+    drawScene() {}
+
     hide() {
     } 
+    hideScene(){}
+    hideCharacters(){}
 
     unhide() {
     }

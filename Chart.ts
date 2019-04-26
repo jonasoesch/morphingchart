@@ -160,6 +160,14 @@ export abstract class Chart implements Drawable {
         }
     }
 
+    get coordinates():{left:number, top:number} {
+	    let rect = this.stage.node().getBoundingClientRect()
+	    return { 
+            top: rect.top, 
+            left: rect.left 
+        }
+    }
+
     buildChart(def:ChartDefinition) {
         this.data = def.data
         this.axes = this.buildAxes(def.axes)
@@ -213,19 +221,21 @@ export abstract class Chart implements Drawable {
 
     draw() {
         this.stage.selectAll(".chart-title").remove()
-        this.drawAxes()
+        this.drawScene()
         this.drawCharacters()
         this.drawAnnotations()
         this.unhide()
     }
 
-    protected drawAxes() {
+    public drawScene() {
         this.axes.forEach(a => a.draw())
     }
-    protected drawCharacters() {
+    public drawCharacters() {
         this.characters.forEach(c => {c.draw()})
     }
 
+    // Only the chart annotations.
+    // Character annotations are handeled by the characters themselves
     protected drawAnnotations() {
         if(this.annotations) {
             this.annotations.forEach(a => this.drawAnnotation(a))
@@ -271,6 +281,10 @@ export abstract class Chart implements Drawable {
         //.transition()
         //.duration(100)
             .style("opacity", 0)
+    }
+
+    hideCharacters() {
+        this.characters.forEach(c => c.hide()) 
     }
 
     /**
