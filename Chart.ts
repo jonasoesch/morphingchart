@@ -159,7 +159,7 @@ export abstract class Chart implements Drawable {
             d3.select("body")
                 .append("section")
                 .attr("id", this.name)
-                .attr("class", "Graph")
+                .attr("class", "Chart")
             throw new Error(`Don't know where to draw the chart with name ${this.name}`)
         }
     }
