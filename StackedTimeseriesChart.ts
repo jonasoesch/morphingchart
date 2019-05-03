@@ -48,7 +48,7 @@ export class StackedTimeseriesChart extends Chart {
     private characterMaxOrZero(c:any, accessor:Function, c2:any):number {
         if(c === null) {return 0}
         if("data" in c) {
-               return c.data.filter(accessor)[0]["max"]
+            return c.data.filter(accessor)[0]["max"]
         }
     }
 
@@ -88,6 +88,14 @@ class StackedTimeseriesAxis extends Axis {
         if(this.name === "x") {
             this.stage.attr("transform", `translate(0, ${this.height})`) 
         }
+
+        if(this.name === "y") {
+            this.stage.selectAll(".tick line")
+                .attr("x2", this.width)
+                .attr("stroke-dasharray", 4)
+        }
+
+
         this.drawAnnotations()
 
     }
