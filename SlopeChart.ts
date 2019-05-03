@@ -37,20 +37,28 @@ class SlopeAxis extends Axis {
         }
     }
 
+
+    getAxis(scale:any, ticks?:any) {
+        let axis:d3.Axis<any>
+        if(this.name === "from") {axis = d3.axisLeft(scale).tickArguments([6]);}
+        if(this.name === "to") {axis = d3.axisRight(scale).tickArguments([6]);}
+        if(ticks) {axis.tickValues(ticks)}
+        return axis
+    }
+
     draw() {
-        let axis:d3.Axis<number[]> 
         this.stage.selectAll("*").remove()
-        if(this.name === "from") {axis = d3.axisLeft(this.scale).tickArguments([6]);}
-        if(this.name === "to") {axis = d3.axisRight(this.scale).tickArguments([6]);}
-        if(this.ticks) {axis.tickValues(this.ticks)}
+        
+        this.axis = this.getAxis(this.scale, this.ticks)
         if(this.name === "from") {
             this.stage
                 .attr("class", "axis")
-                .call(throwIfNotSet(axis, "Axis name needs to be either 'from' or 'to'"))
+                .call(throwIfNotSet(this.axis, "Axis name needs to be either 'from' or 'to'"))
         }
         if(this.name === "to") {
             this.stage.attr("transform", `translate(${this.width}, 0)`) 
         }
+
 
         this.stage.selectAll(".tick line")
             .attr("x2", this.width)

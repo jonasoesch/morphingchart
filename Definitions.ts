@@ -69,8 +69,14 @@ export interface MorphingChartDefinition extends Named {
     name:string
     from:Chart
     to:Chart
+    axes?: MorphingAxisDefinition[]
     design?:Design
     characters:MorphingCharacterDefinition[]
+}
+
+export interface MorphingAxisDefinition {
+    from:string
+    to:string
 }
 
 export interface MorphingCharacterDefinition {

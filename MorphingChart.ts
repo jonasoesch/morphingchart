@@ -1,9 +1,11 @@
 import * as d3 from "d3"
 import {Drawable} from "./Drawable"
-import {MorphingChartDefinition, MorphingCharacterDefinition} from "./Definitions"
+import {MorphingChartDefinition, MorphingCharacterDefinition, MorphingAxisDefinition} from "./Definitions"
 import {Chart} from "./Chart"
 import {Character} from "./Character"
+import {Axis} from "./Axis"
 import {MorphingCharacter} from "./MorphingCharacter"
+import {MorphingAxis} from "./MorphingAxis"
 import {Design} from "./Design"
 import {valOrDefault, throwIfNotSet} from "./Helpers"
 
@@ -16,6 +18,7 @@ export class MorphingChart implements Drawable {
     design:Design 
     stage:d3.Selection<any, any, any, any>
     characters:MorphingCharacter[]
+    axes:MorphingAxis[]
     position:number = 0
     initialCoordinates:{top:number, left:number}
 
@@ -27,6 +30,7 @@ export class MorphingChart implements Drawable {
         this.design = valOrDefault(chartDef.design, this.from.design)
         this.initStage()
         this.characters = this.buildCharacters(chartDef.characters)
+        this.axes = this.buildAxes(valOrDefault(chartDef.axes, []))
     }
 
 
@@ -82,13 +86,34 @@ export class MorphingChart implements Drawable {
         })
     }
 
+
+    buildAxes(axesDef:MorphingAxisDefinition[]) {
+        return  axesDef.map( (axisDef:MorphingAxisDefinition) => {
+            return new MorphingAxis(
+                this.getAxis(this.from, axisDef.from),
+                this.getAxis(this.to, axisDef.to),
+                this.axisStage(),
+            ) 
+        } )
+    }
+
     getCharacter(chart:Chart, name:string):Character {
         return chart.characters.get(name)  
+    }
+
+    getAxis(chart:Chart, name:string):Axis {
+        return chart.axes.get(name) 
     }
 
 
     characterStage():d3.Selection<any, any, any, any> {
         return this.stage.append("g")
+            .attr("transform", `translate(${this.design.margin.left}, ${this.design.margin.top})`)
+    }
+
+    axisStage():d3.Selection<any, any, any, any> {
+        return this.stage.append("g")
+            .attr("class", "axis")
             .attr("transform", `translate(${this.design.margin.left}, ${this.design.margin.top})`)
     }
 
@@ -101,6 +126,7 @@ export class MorphingChart implements Drawable {
     draw() {
         this.hide()
         this.characters.forEach( c => c.atPosition(this.position).draw() )
+        this.axes.forEach(a => a.atPosition(this.position).draw())
         this.stage.attr("transform", `translate(${this.coordinates.left}, ${this.coordinates.top})`)
     }
 

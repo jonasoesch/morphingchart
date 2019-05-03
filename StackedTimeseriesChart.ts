@@ -69,15 +69,21 @@ class StackedTimeseriesAxis extends Axis {
         }
     }
 
+
+    getAxis(scale:any, ticks?:any[]):d3.Axis<any> {
+        let axis:d3.Axis<any>
+        if(this.name === "y") {axis = d3.axisLeft(scale).tickArguments([6]);}
+        if(this.name === "x") {axis = d3.axisBottom(scale).tickArguments([6]);}
+        if(ticks) {axis.tickValues(ticks)}
+        return axis
+    }
+
     draw() {
-        let axis:d3.Axis<number[]> 
-            this.stage.selectAll("*").remove()
-        if(this.name === "y") {axis = d3.axisLeft(this.scale).tickArguments([6]);}
-        if(this.name === "x") {axis = d3.axisBottom(this.scale).tickArguments([6]);}
-        if(this.ticks) {axis.tickValues(this.ticks)}
+        this.axis = this.getAxis(this.scale, this.ticks)
+        this.stage.selectAll("*").remove()
         this.stage
             .attr("class", "axis")
-            .call(throwIfNotSet(axis, "Axis name needs to be either 'x' or 'y'"))
+            .call(throwIfNotSet(this.axis, "Axis name needs to be either 'x' or 'y'"))
 
         if(this.name === "x") {
             this.stage.attr("transform", `translate(0, ${this.height})`) 
