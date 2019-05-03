@@ -180,7 +180,7 @@ export class Logger {
         const body = this.toString()
         console.log(body)
         //fetch('https://www.jonasoesch.ch/mortality/', {
-        fetch("__API_URL__", {
+        fetch("__API_URL__"+"log", {
             method: 'POST',
             headers: {
                 'Content-Type': 'text/plain',
