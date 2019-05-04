@@ -224,16 +224,15 @@ export abstract class Chart implements Drawable {
     // ========= Helper methods ==========
 
 
-
     draw() {
-        this.stage.selectAll(".chart-title").remove()
+        this.removeAnnotations()
         this.drawScene()
         this.drawCharacters()
         this.unhide()
     }
 
     public drawScene() {
-        this.stage.selectAll(".chart-title").remove()
+        this.removeAnnotations()
         this.drawAnnotations()
         this.axes.forEach(a => a.draw())
     }
@@ -249,6 +248,7 @@ export abstract class Chart implements Drawable {
         }
     }
 
+    // TODO: less messy here
     protected drawAnnotation(annotation:Annotation) {
         let text = this.stage.append("g") 
             .attr("class", "chart-title")
@@ -265,6 +265,10 @@ export abstract class Chart implements Drawable {
                 .attr("y", (d, i) => i*this.design.font.size * 2 )
                 .attr("x", 0)
                 .text( d => d )
+    }
+
+    removeAnnotations() {
+        this.stage.selectAll(".chart-title").remove()
     }
 
     protected wordWrap(label:string, lineLength:number):string[] {

@@ -13,9 +13,10 @@ export class FadingChart implements Drawable {
     position:number = 0
 
     constructor(chartDef:FadingChartDefinition) {
-        this.name = throwIfNotSet(chartDef.name, "No name for MorphinChart")
+        this.name = throwIfNotSet(chartDef.name, "No name for Fading Chart")
         this.to = throwIfNotSet(chartDef.to, `Target chart not defined for ${this.name}`) 
         this.from = throwIfNotSet(chartDef.from, `Origin chart not defined for ${this.name}`)
+        this.initStage()
     }
 
     atPosition(position:number) {
@@ -24,11 +25,51 @@ export class FadingChart implements Drawable {
     }
 
 
+    get container():HTMLElement {
+        if(document.getElementById(this.name)) {
+            return document.getElementById(this.name)
+        } else {
+            console.log(`HTML element for ${this.name}-Chart was added automatically.`)
+            return d3.select("body")
+                .append("section")
+                .attr("id", this.name)
+                .attr("class", "Chart")
+                .node()
+
+        }
+    }
+
+
+    private initStage() {
+        this.insertChart()
+        this.setDimensions()
+    }
+
+
+
+    private insertChart() {
+        this.stage = d3.select(this.container)
+            .append("svg")
+            .attr("id", `${this.name}-stage`)
+    }
+
+    private setDimensions() {
+        this.stage
+            .attr("width", this.to.width)
+            .attr("height", this.to.width)
+    }
+
     draw() {
-        this.from.draw()
-        this.to.draw()
-        this.to.stage.style("opacity", this.position)
-        this.from.stage.style("opacity", 1-this.position)
+        this.from.characters.forEach(c => {
+            this.stage.append("path")
+                .attr("d", c.path)
+                .attr("fill", c.color)
+        })
+        this.to.characters.forEach(c => {
+            this.stage.append("path")
+                .attr("d", c.path)
+                .attr("fill", c.color)
+        })
     }
 
     drawCharacters() {
