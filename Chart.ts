@@ -156,11 +156,13 @@ export abstract class Chart implements Drawable {
         if(document.getElementById(this.name)) {
             return document.getElementById(this.name)
         } else {
-            d3.select("body")
+            console.log(`HTML element for ${this.name}-Chart was added automatically.`)
+            return d3.select("body")
                 .append("section")
                 .attr("id", this.name)
                 .attr("class", "Chart")
-            throw new Error(`Don't know where to draw the chart with name ${this.name}`)
+                .node()
+
         }
     }
 
@@ -227,11 +229,12 @@ export abstract class Chart implements Drawable {
         this.stage.selectAll(".chart-title").remove()
         this.drawScene()
         this.drawCharacters()
-        this.drawAnnotations()
         this.unhide()
     }
 
     public drawScene() {
+        this.stage.selectAll(".chart-title").remove()
+        this.drawAnnotations()
         this.axes.forEach(a => a.draw())
     }
     public drawCharacters() {

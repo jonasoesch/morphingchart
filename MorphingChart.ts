@@ -72,7 +72,13 @@ export class MorphingChart implements Drawable {
         if(document.getElementById(this.name)) {
             return document.getElementById(this.name)
         } else {
-            throw new Error(`Don't know where to draw the chart with name ${this.name}`)
+            console.log(`HTML element for ${this.name}-Chart was added automatically.`)
+            return d3.select("body")
+                .append("section")
+                .attr("id", this.name)
+                .attr("class", "morphing Chart")
+                .node()
+
         }
     }
 
