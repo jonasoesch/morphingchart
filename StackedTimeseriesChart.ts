@@ -85,9 +85,7 @@ class StackedTimeseriesAxis extends Axis {
             .attr("class", "axis")
             .call(throwIfNotSet(this.axis, "Axis name needs to be either 'x' or 'y'"))
 
-        if(this.name === "x") {
-            this.stage.attr("transform", `translate(0, ${this.height})`) 
-        }
+       this.stage.attr("transform", this.translate()) 
 
         if(this.name === "y") {
             this.stage.selectAll(".tick line")
@@ -95,10 +93,18 @@ class StackedTimeseriesAxis extends Axis {
                 .attr("stroke-dasharray", 4)
         }
 
-
         this.drawAnnotations()
-
     }
+
+
+    translate() {
+        if(this.name === "x") {
+            return `translate(0, ${this.height})` 
+        } else {
+            return `translate(0,0)` 
+        }
+    }
+
 
     drawAnnotation(annotation:any) {
         this.stage

@@ -5,29 +5,26 @@ import {ChangingAxis} from "./ChangingAxis"
 import {Axis} from "./Axis"
 
 
-export class MorphingAxis extends ChangingAxis {
-    from:Axis
-    to:Axis
+export class FadingAxis extends ChangingAxis {
+    axis:Axis
 
     constructor(
-        from:Axis,
-        to:Axis,
+        axis:Axis,
         stage:d3.Selection<any,any,any,any>
     ) {
         super()     
+        this.axis = axis
         this.stage = stage
-        this.from = from
-        this.to = to
     }
 
     draw() {
-        let interpolator = d3.interpolate(this.from.scale.domain(), this.to.scale.domain())
-        let d:any = interpolator(this.position)
-        let scale = this.from.scale.copy()
-        let s = (scale as any).domain(d)
-        let axis = this.from.getAxis(s)
+        let scale = this.axis.scale.copy()
+        let axis = this.axis.getAxis(scale)
         this.stage
+            .append("g")
+            .attr("transform", this.axis.translate())
             .call(axis)
     }
+
 
 }

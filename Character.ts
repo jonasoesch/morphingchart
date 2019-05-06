@@ -50,10 +50,6 @@ export abstract class Character {
         this.stage.selectAll("*").remove()
     }
 
-    public opacity(opacity:number) {
-        console.log(this.name, opacity)
-        this.stage.attr("opacity", opacity)
-    }
 
     get path() {
         throwIfEmpty(this.data, `No data for ${this.name}`)

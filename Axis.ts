@@ -49,6 +49,7 @@ export abstract class Axis {
     abstract defineScale(domain:any):any
     abstract getAxis(scale:any, ticks?:any):d3.Axis<any>
     abstract draw():void
+    abstract translate():string
 
 
     drawAnnotations() {

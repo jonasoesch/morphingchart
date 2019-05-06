@@ -1,89 +1,52 @@
 import * as d3 from "d3"
 import {Drawable} from "./Drawable"
-import {FadingChartDefinition} from "./Definitions"
+import {ChangingChart} from "./ChangingChart"
+import {ChangingeChartDefinition, ChangingCharacterDefinition, ChangingAxisDefinition} from "./Definitions"
 import {Chart} from "./Chart"
-import { throwIfNotSet} from "./Helpers"
+import {FadingCharacter} from "./FadingCharacter"
+import {Character} from "./Character"
+import {FadingAxis} from "./FadingAxis"
+import {throwIfNotSet} from "./Helpers"
 
 
-export class FadingChart implements Drawable {
-    name:string
-    from:Chart
-    to:Chart
-    stage:d3.Selection<any, any, any, any>
-    position:number = 0
+export class FadingChart extends ChangingChart {
 
-    constructor(chartDef:FadingChartDefinition) {
-        this.name = throwIfNotSet(chartDef.name, "No name for Fading Chart")
-        this.to = throwIfNotSet(chartDef.to, `Target chart not defined for ${this.name}`) 
-        this.from = throwIfNotSet(chartDef.from, `Origin chart not defined for ${this.name}`)
-        this.initStage()
+    fromCharacters:FadingCharacter[]
+    toCharacters:FadingCharacter[]
+    axes:FadingAxis[]
+
+    constructor(chartDef:ChangingeChartDefinition) {
+        super(chartDef)
+        this.fromCharacters = this.buildFromCharacters()
+        this.toCharacters = this.buildToCharacters()
+        this.buildCharacters(this.to)
+        this.axes = this.buildAxes()
     }
 
-    atPosition(position:number) {
-        this.position = position 
-        return this
-    }
-
-
-    get container():HTMLElement {
-        if(document.getElementById(this.name)) {
-            return document.getElementById(this.name)
-        } else {
-            console.log(`HTML element for ${this.name}-Chart was added automatically.`)
-            return d3.select("body")
-                .append("section")
-                .attr("id", this.name)
-                .attr("class", "Chart")
-                .node()
-
-        }
-    }
-
-
-    private initStage() {
-        this.insertChart()
-        this.setDimensions()
-    }
-
-
-
-    private insertChart() {
-        this.stage = d3.select(this.container)
-            .append("svg")
-            .attr("id", `${this.name}-stage`)
-    }
-
-    private setDimensions() {
-        this.stage
-            .attr("width", this.to.width)
-            .attr("height", this.to.width)
-    }
 
     draw() {
-        this.from.characters.forEach(c => {
-            this.stage.append("path")
-                .attr("d", c.path)
-                .attr("fill", c.color)
-        })
-        this.to.characters.forEach(c => {
-            this.stage.append("path")
-                .attr("d", c.path)
-                .attr("fill", c.color)
-        })
+        this.hide()
+        this.fromCharacters.forEach(c => c.atPosition(1).draw())
+        this.toCharacters.forEach(c => c.atPosition(this.position).draw())
+        this.axes.forEach(a => a.draw())
+        this.stage.attr("transform", `translate(${this.coordinates.left}, ${this.coordinates.top})`)
     }
 
-    drawCharacters() {
-        this.draw()
+    buildFromCharacters() {
+        return this.buildCharacters(this.from) 
     }
 
-    drawScene() {}
-
-    hide() {
-    } 
-    hideScene(){}
-    hideCharacters(){}
-
-    unhide() {
+    buildToCharacters() {
+        return this.buildCharacters(this.to) 
     }
+
+    buildCharacters(chart:Chart) {
+        return Array.from(chart.characters).map((args) => new FadingCharacter(args[1], this.characterStage()) ) 
+    }
+
+    buildAxes() {
+        return Array.from(this.from.axes).map((args) => new FadingAxis(args[1], this.axisStage()))
+    }
+
 
 }
