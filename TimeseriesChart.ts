@@ -27,27 +27,6 @@ export class TimeseriesChart extends Chart {
         super.buildChart(def) 
     }
 
-
-    draw() {
-        super.draw()
-        let defs = this.stage.append("defs")
-        this.characters.forEach(c => {
-            let mainGradient = defs.append('linearGradient')
-                .attr('id', c.name)
-                .attr('gradientTransform', "rotate(90)")
-
-            mainGradient.append('stop')
-                .attr('class', 'stop-left')
-                .attr('offset', '0%')
-                .attr('stop-color', "rgba(255,255,255,1)")
-
-            mainGradient.append('stop')
-                .attr('class', 'stop-right')
-                .attr('offset', '100%')
-                .attr('stop-color', "rgba(255,255,255,0)")
-        })
-    }
-
 }
 
 class TimeseriesAxis extends Axis {
@@ -64,12 +43,21 @@ class TimeseriesAxis extends Axis {
         }
     }
 
+    translate() {
+        return "translate(0,0)"
+    }
+
+    getAxis(scale:any, ticks?:any) {
+        let axis:d3.Axis<any>
+        if(this.name === "y") {axis = d3.axisLeft(scale).tickArguments([6]);}
+        if(this.name === "x") {axis = d3.axisBottom(scale).tickArguments([6]);}
+        if(ticks) {axis.tickValues(ticks)}
+        return axis
+    }
+
     draw() {
-        let axis:d3.Axis<number[]> 
-            this.stage.selectAll("*").remove()
-        if(this.name === "y") {axis = d3.axisLeft(this.scale).tickArguments([6]);}
-        if(this.name === "x") {axis = d3.axisBottom(this.scale).tickArguments([6]);}
-        if(this.ticks) {axis.tickValues(this.ticks)}
+        let axis = this.getAxis(this.scale, this.ticks)
+        this.stage.selectAll("*").remove()
         this.stage
             .attr("class", "axis")
             .call(throwIfNotSet(axis, "Axis name needs to be either 'x' or 'y'"))
@@ -122,13 +110,9 @@ class TimeseriesCharacter extends Character {
         this.stage
             .append("path")
             .attr("d", this.path)
-            .attr("fill", "url(#all)")
-            .attr("stroke-width", 0)
+            .attr("fill", this.color)
+            .attr("stroke-width", 5)
 
-        this.stage
-            .append("path")
-            .attr("d", this.path2)
-            .attr("fill", "#fff")
 
         this.drawAnnotations()
     }
@@ -142,19 +126,12 @@ class TimeseriesCharacter extends Character {
             .attr("x",this.annotationX(annotation))
     }
 
-    get path2() {
-        return d3.area()
-            .x((d:any, i:number) => this.xScale(d[this.x]))
-            .y0((d:any) => this.yScale(d[this.y]))
-            .y1((d:any) => this.yScale(d[this.y])-8)(this.data)
-    }
-
 
     pathGenerator() {
         return d3.area()
             .x((d:any, i:number) => this.xScale(d[this.x]))
             .y0((d:any) => this.yScale(d[this.y]))
-            .y1((d:any) => this.yScale(0))
+            .y1((d:any) => this.yScale(d[this.y]))
     }
 
     protected annotationY(annotation:Annotation):number {
