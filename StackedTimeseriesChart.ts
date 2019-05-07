@@ -37,12 +37,20 @@ export class StackedTimeseriesChart extends Chart {
         this.characters.forEach(c => {
             c.data.forEach((d2:any) => {
                 d2["min"] = this.characterMaxOrZero(previousCharacter, 
-                    (d1:any) =>  {return d1[x] === d2[x]}, c)
+                    (d1:any) =>  {return this.unwrap(d1[x]) === this.unwrap(d2[x])}, c)
                 d2["max"] = this.characterMaxOrZero(previousCharacter, 
-                    (d1:any) => {return d1[x] === d2[x]}, c) + d2[y]
+                    (d1:any) => {return this.unwrap(d1[x]) === this.unwrap(d2[x])}, c) + d2[y]
             })
             previousCharacter = c
         })
+    }
+
+    unwrap(d:any) {
+        if(d instanceof Date)  {
+            return d.getTime() 
+        } else {
+            return d 
+        }
     }
 
     private characterMaxOrZero(c:any, accessor:Function, c2:any):number {
