@@ -1,48 +1,52 @@
 import * as d3 from "d3"
 import {Drawable} from "./Drawable"
-import {FadingChartDefinition} from "./Definitions"
+import {ChangingChart} from "./ChangingChart"
+import {ChangingeChartDefinition, ChangingCharacterDefinition, ChangingAxisDefinition} from "./Definitions"
 import {Chart} from "./Chart"
-import { throwIfNotSet} from "./Helpers"
+import {FadingCharacter} from "./FadingCharacter"
+import {Character} from "./Character"
+import {FadingAxis} from "./FadingAxis"
+import {throwIfNotSet} from "./Helpers"
 
 
-export class FadingChart implements Drawable {
-    name:string
-    from:Chart
-    to:Chart
-    stage:d3.Selection<any, any, any, any>
-    position:number = 0
+export class FadingChart extends ChangingChart {
 
-    constructor(chartDef:FadingChartDefinition) {
-        this.name = throwIfNotSet(chartDef.name, "No name for MorphinChart")
-        this.to = throwIfNotSet(chartDef.to, `Target chart not defined for ${this.name}`) 
-        this.from = throwIfNotSet(chartDef.from, `Origin chart not defined for ${this.name}`)
-    }
+    fromCharacters:FadingCharacter[]
+    toCharacters:FadingCharacter[]
+    axes:FadingAxis[]
 
-    atPosition(position:number) {
-        this.position = position 
-        return this
+    constructor(chartDef:ChangingeChartDefinition) {
+        super(chartDef)
+        this.fromCharacters = this.buildFromCharacters()
+        this.toCharacters = this.buildToCharacters()
+        this.buildCharacters(this.to)
+        this.axes = this.buildAxes()
     }
 
 
     draw() {
-        this.from.draw()
-        this.to.draw()
-        this.to.stage.style("opacity", this.position)
-        this.from.stage.style("opacity", 1-this.position)
+        this.hide()
+        this.fromCharacters.forEach(c => c.atPosition(1).draw())
+        this.toCharacters.forEach(c => c.atPosition(this.position).draw())
+        this.axes.forEach(a => a.draw())
+        this.stage.attr("transform", `translate(${this.coordinates.left}, ${this.coordinates.top})`)
     }
 
-    drawCharacters() {
-        this.draw()
+    buildFromCharacters() {
+        return this.buildCharacters(this.from) 
     }
 
-    drawScene() {}
-
-    hide() {
-    } 
-    hideScene(){}
-    hideCharacters(){}
-
-    unhide() {
+    buildToCharacters() {
+        return this.buildCharacters(this.to) 
     }
+
+    buildCharacters(chart:Chart) {
+        return Array.from(chart.characters).map((args) => new FadingCharacter(args[1], this.characterStage()) ) 
+    }
+
+    buildAxes() {
+        return Array.from(this.from.axes).map((args) => new FadingAxis(args[1], this.axisStage()))
+    }
+
 
 }

@@ -50,6 +50,7 @@ export abstract class Character {
         this.stage.selectAll("*").remove()
     }
 
+
     get path() {
         throwIfEmpty(this.data, `No data for ${this.name}`)
         return this.pathGenerator()(this.data)

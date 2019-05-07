@@ -1,15 +1,15 @@
 import * as d3 from "d3"
+import {ChangingCharacter} from "./ChangingCharacter"
 import {Character} from "./Character"
 import {interpolatePath} from "./interpolation/interpolatePath"
 import {throwIfEmpty} from "./Helpers"
 
-export class MorphingCharacter {
-    from:Character
+export class MorphingCharacter extends ChangingCharacter {
+   from:Character
     to:Character
-    stage:d3.Selection<any, any, any, any>
-    position:number = 0
 
     constructor(from:Character, to:Character, stage:d3.Selection<any, any, any, any>) {
+        super()
         this.from = from
         this.to = to
         this.stage = stage
@@ -68,7 +68,5 @@ export class MorphingCharacter {
     get shouldMorphLabel() {
         return this.from.label.name === this.to.label.name 
     }
-
-
-
 }
+

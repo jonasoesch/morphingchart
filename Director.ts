@@ -212,7 +212,6 @@ export class JuxtaposedDirector extends Director {
         } else {
             chart.draw() 
         }
-
     }
 
     protected drawChart(chart:Drawable) {

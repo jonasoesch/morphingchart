@@ -65,24 +65,28 @@ export interface OffsetDefinition {
 }
 
 
-export interface MorphingChartDefinition extends Named {
+export interface ChangingeChartDefinition extends Named {
     name:string
     from:Chart
     to:Chart
+    axes?: ChangingAxisDefinition[]
     design?:Design
-    characters:MorphingCharacterDefinition[]
 }
 
-export interface MorphingCharacterDefinition {
+export interface MorphingChartDefinition extends ChangingeChartDefinition {
+    characters:ChangingCharacterDefinition[]
+}
+
+export interface ChangingAxisDefinition {
     from:string
     to:string
 }
 
-export interface FadingChartDefinition {
-    name:string
-    from:Chart
-    to:Chart
+export interface ChangingCharacterDefinition {
+    from:string
+    to:string
 }
+
 
 export interface StepDefinition {
     from:number

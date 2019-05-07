@@ -11,6 +11,8 @@ export abstract class Axis {
     _name:string
     _stage:d3.Selection<any, any, any, any>
     _field:string
+    axis:d3.Axis<any>
+    position:string
     ticks:any[]
 
     width:number
@@ -45,7 +47,9 @@ export abstract class Axis {
     }
 
     abstract defineScale(domain:any):any
+    abstract getAxis(scale:any, ticks?:any):d3.Axis<any>
     abstract draw():void
+    abstract translate():string
 
 
     drawAnnotations() {

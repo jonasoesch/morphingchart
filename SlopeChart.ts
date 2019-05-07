@@ -27,30 +27,35 @@ class SlopeAxis extends Axis {
     defineScale(domain:(number[]|string[])) {
         if(this.name === "from" || this.name === "to") {
             return d3.scaleLinear()
-                    .domain((domain as number[]).reverse())
-                    .range([0, this.height])
+                .domain((domain as number[]).reverse())
+                .range([0, this.height])
         }
         if(this.name === "x") {
             return d3.scaleOrdinal()
-                    .domain((domain as string[]))
-                    .range([0, this.width])
+                .domain((domain as string[]))
+                .range([0, this.width])
         }
     }
 
+
+    getAxis(scale:any, ticks?:any) {
+        let axis:d3.Axis<any>
+            if(this.name === "from") {axis = d3.axisLeft(scale).tickArguments([6]);}
+        if(this.name === "to") {axis = d3.axisRight(scale).tickArguments([6]);}
+        if(ticks) {axis.tickValues(ticks)}
+        return axis
+    }
+
     draw() {
-        let axis:d3.Axis<number[]> 
         this.stage.selectAll("*").remove()
-        if(this.name === "from") {axis = d3.axisLeft(this.scale).tickArguments([6]);}
-        if(this.name === "to") {axis = d3.axisRight(this.scale).tickArguments([6]);}
-        if(this.ticks) {axis.tickValues(this.ticks)}
+
+        this.axis = this.getAxis(this.scale, this.ticks)
         if(this.name === "from") {
             this.stage
                 .attr("class", "axis")
-                .call(throwIfNotSet(axis, "Axis name needs to be either 'from' or 'to'"))
+                .call(throwIfNotSet(this.axis, "Axis name needs to be either 'from' or 'to'"))
         }
-        if(this.name === "to") {
-            this.stage.attr("transform", `translate(${this.width}, 0)`) 
-        }
+        this.stage.attr("transform", this.translate()) 
 
         this.stage.selectAll(".tick line")
             .attr("x2", this.width)
@@ -61,89 +66,98 @@ class SlopeAxis extends Axis {
     }
 
 
-    drawAnnotation(annotation:any) {
-        this.stage
-            .append("text")
-            .attr("class", "axis-label")
-            .text(annotation.name)
-            .attr("text-anchor", "start")
-            .attr("x", annotation.offset.left)
-            .attr("y", annotation.offset.top + this.height * this.annotationPosition(annotation.anchor) + 40)
+    translate():string {
+        if(this.name === "to") {
+            return `translate(${this.width}, 0)`
+        } else {
+            return `translate(0, 0)`
+        }
+    }
+
+
+        drawAnnotation(annotation:any) {
+            this.stage
+                .append("text")
+                .attr("class", "axis-label")
+                .text(annotation.name)
+                .attr("text-anchor", "start")
+                .attr("x", annotation.offset.left)
+                .attr("y", annotation.offset.top + this.height * this.annotationPosition(annotation.anchor) + 40)
+
+        }
 
     }
 
-}
 
+    class SlopeCharacter extends Character {
+        yScale:any
+        y:string
+        xScale:any
+        x:string
+        data:any
 
-class SlopeCharacter extends Character {
-    yScale:any
-    y:string
-    xScale:any
-    x:string
-    data:any
+        constructor(charDef:CharacterDefinition,
+            stage:d3.Selection<any, any, any, any>,
+            data:object[],
+            yAxis:any,
+            xAxis:any) 
+        {
+            super(charDef, data, stage)
+            this.yScale = yAxis.scale
+            this.y = yAxis.field
+            this.xScale = xAxis.scale
+            this.x = xAxis.field
+            this.data = throwIfEmpty(data, `There is no data for character ${this.name}`)
+            this.field = charDef.field
+        }
 
-    constructor(charDef:CharacterDefinition,
-        stage:d3.Selection<any, any, any, any>,
-        data:object[],
-        yAxis:any,
-        xAxis:any) 
-    {
-        super(charDef, data, stage)
-        this.yScale = yAxis.scale
-        this.y = yAxis.field
-        this.xScale = xAxis.scale
-        this.x = xAxis.field
-        this.data = throwIfEmpty(data, `There is no data for character ${this.name}`)
-        this.field = charDef.field
-    }
+        draw() {
+            this.stage.selectAll("*").remove()
+            this.stage
+                .append("path")
+                .attr("d", this.path)
+                .attr("fill", this.color)
+            this.drawAnnotations()
+        }
 
-    draw() {
-        this.stage.selectAll("*").remove()
-        this.stage
-            .append("path")
-            .attr("d", this.path)
-            .attr("fill", this.color)
-        this.drawAnnotations()
-    }
-
-    drawAnnotation(annotation:any) {
-        this.stage
-            .append("text")
-            .text(annotation.name)
-            .attr("fill", this.color)
-            .attr("text-anchor", "start")
+        drawAnnotation(annotation:any) {
+            this.stage
+                .append("text")
+                .text(annotation.name)
+                .attr("fill", this.color)
+                .attr("text-anchor", "start")
             //.attr("fill", this.lightOrDarkBg(this.color, "#fff", "#000"))
-            .attr("y", this.annotationY(annotation))
-            .attr("x",this.annotationX(annotation))
+                .attr("y", this.annotationY(annotation))
+                .attr("x",this.annotationX(annotation))
+        }
+
+
+        pathGenerator() {
+
+            return d3.area()
+                .x((d:any, i:number) => this.xScale(d[this.x]))
+                .y0((d:any) => this.yScale(d[this.y]))
+                .y1((d:any) => this.yScale(d[this.y])-2)
+        }
+
+
+        protected annotationY(annotation:Annotation):number {
+            let pos = this.annotationPosition(annotation.anchor)
+            return this.yScale(this.data[pos][this.y]) + 3 + annotation.offset.top
+        }
+
+        protected annotationX(annotation:Annotation):number {
+            let pos = this.annotationPosition(annotation.anchor)
+            return this.xScale(this.data[pos][this.x]) + 5 + annotation.offset.left 
+        }
+
+
+        protected annotationPosition(pos:(string|number)):number {
+            if(pos === "start") {pos = 0}
+            if(pos === "end") {pos = this.data.length -1}
+            if(typeof(pos) === "string") {pos = 0} // Users mistake
+            return pos
+        }
+
+
     }
-
-
-    pathGenerator() {
-
-        return d3.area()
-            .x((d:any, i:number) => this.xScale(d[this.x]))
-            .y0((d:any) => this.yScale(d[this.y]))
-            .y1((d:any) => this.yScale(d[this.y])-2)
-    }
-
-
-    protected annotationY(annotation:Annotation):number {
-        let pos = this.annotationPosition(annotation.anchor)
-       return this.yScale(this.data[pos][this.y]) + 3 + annotation.offset.top
-    }
-
-    protected annotationX(annotation:Annotation):number {
-        let pos = this.annotationPosition(annotation.anchor)
-        return this.xScale(this.data[pos][this.x]) + 5 + annotation.offset.left 
-    }
-
-
-    protected annotationPosition(pos:(string|number)):number {
-        if(pos === "start") {pos = 0}
-        if(pos === "end") {pos = this.data.length -1}
-        if(typeof(pos) === "string") {pos = 0} // Users mistake
-        return pos
-    }
-
-
-}
