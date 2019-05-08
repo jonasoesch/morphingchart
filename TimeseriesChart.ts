@@ -76,7 +76,8 @@ class TimeseriesAxis extends Axis {
             .text(annotation.name)
             .attr("text-anchor", "start")
             .attr("x", annotation.offset.left - 20)
-            .attr("y", annotation.offset.top + this.height * this.annotationPosition(annotation.anchor) + 60)
+            .attr("y", annotation.offset.top-20)
+            .attr("fill", "#000")
     }
 
 
@@ -111,7 +112,7 @@ class TimeseriesCharacter extends Character {
             .append("path")
             .attr("d", this.path)
             .attr("fill", this.color)
-            .attr("stroke-width", 5)
+            .attr("stroke", this.color)
 
 
         this.drawAnnotations()
@@ -130,13 +131,13 @@ class TimeseriesCharacter extends Character {
     pathGenerator() {
         return d3.area()
             .x((d:any, i:number) => this.xScale(d[this.x]))
-            .y0((d:any) => this.yScale(d[this.y]))
             .y1((d:any) => this.yScale(d[this.y]))
+            .y0((d:any) => this.yScale(d[this.y])-3)
     }
 
     protected annotationY(annotation:Annotation):number {
         let pos = this.annotationPosition(annotation.anchor)
-        return this.yScale(this.data[pos]["max"]) + 10 + annotation.offset.top
+        return this.yScale(this.data[pos][this.y]) + 5 + annotation.offset.top
     }
 
     protected annotationX(annotation:Annotation):number {
