@@ -25,11 +25,13 @@ export class MorphingAxis extends ChangingAxis {
         let d:any = interpolator(this.position)
         let scale = this.from.scale.copy()
         let s = (scale as any).domain(d)
-        if(this.from.ticks === this.to.ticks) {
-            let axis = this.from.getAxis(s, this.from.ticks)
-        } else {
-            let axis = this.from.getAxis(s)
+        let t:any = null
+
+        if(this.from.ticks && this.to.ticks) {
+            t = d3.interpolate(this.from.ticks, this.to.ticks)(this.position)
         }
+        let axis = this.from.getAxis(s, t)
+
         this.stage
             .append("g")
             .attr("transform", this.to.translate())
