@@ -44,7 +44,11 @@ class TimeseriesAxis extends Axis {
     }
 
     translate() {
-        return "translate(0,0)"
+        if(this.name === "x") {
+            return `translate(0, ${this.height})` 
+        } else {
+            return `translate(0,0)` 
+        }
     }
 
     getAxis(scale:any, ticks?:any) {
@@ -156,3 +160,4 @@ class TimeseriesCharacter extends Character {
 
 
 }
+

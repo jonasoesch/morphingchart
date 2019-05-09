@@ -25,9 +25,12 @@ export class MorphingAxis extends ChangingAxis {
         let d:any = interpolator(this.position)
         let scale = this.from.scale.copy()
         let s = (scale as any).domain(d)
-        let axis = this.from.getAxis(s)
+        let axis = this.from.getAxis(s, this.from.ticks)
         this.stage
+            .append("g")
+            .attr("transform", this.to.translate())
             .call(axis)
     }
 
 }
+
