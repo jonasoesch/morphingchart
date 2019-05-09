@@ -33,9 +33,11 @@ export function throwIfEmpty<T>(value:T[], msg?:string) {
 export function overwriteDefaults(defaults:any, override:any):any {
     let keys = []
 
-    if(override === null || override === undefined || override == {}) {
+
+    if(override === null || override === undefined || override == {} || (typeof override === "string")) {
       return defaults
     }
+
 
     for(let k in override) {
         if(override.hasOwnProperty(k))  {

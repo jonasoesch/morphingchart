@@ -11,7 +11,7 @@ export class StackedTimeseriesChart extends Chart {
 
     buildAxis(axis:AxisDefinition):StackedTimeseriesAxis {
         let s = this.axisStage(axis.name)
-        return new StackedTimeseriesAxis(axis, s, this.innerWidth, this.innerHeight)
+        return new StackedTimeseriesAxis(axis, s, this.innerWidth, this.innerHeight, this.design)
     }
 
 
@@ -122,6 +122,7 @@ class StackedTimeseriesAxis extends Axis {
             .attr("text-anchor", "start")
             .attr("x", annotation.offset.left - 20)
             .attr("y", annotation.offset.top + this.height * this.annotationPosition(annotation.anchor) + 60)
+            .attr("font-family", this.design.font.family)
     }
 
 

@@ -96,4 +96,5 @@ export interface StepDefinition {
 
 export interface DesignDefinition {
     margin?: {left?:number, top?:number, right?:number, bottom?:number}
+    font?: {color?:string, family?:string, size?:number}
 }

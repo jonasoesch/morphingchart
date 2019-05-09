@@ -11,7 +11,7 @@ export class TimeseriesChart extends Chart {
 
     buildAxis(axis:AxisDefinition):TimeseriesAxis {
         let s = this.axisStage(axis.name)
-        return new TimeseriesAxis(axis, s, this.innerWidth, this.innerHeight)
+        return new TimeseriesAxis(axis, s, this.innerWidth, this.innerHeight, this.design)
     }
 
     buildCharacter(chara:CharacterDefinition):TimeseriesCharacter {
@@ -82,6 +82,7 @@ class TimeseriesAxis extends Axis {
             .attr("x", annotation.offset.left - 20)
             .attr("y", annotation.offset.top-20)
             .attr("fill", "#000")
+            .attr("font-family", this.design.font.family)
     }
 
 

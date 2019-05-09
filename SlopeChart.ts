@@ -10,7 +10,7 @@ import {throwIfNotSet, valOrDefault, throwIfEmpty} from "./Helpers"
 export class SlopeChart extends Chart {
     buildAxis(axis:AxisDefinition):SlopeAxis {
         let s = this.axisStage(axis.name)
-        return new SlopeAxis(axis, s, this.innerWidth, this.innerHeight)
+        return new SlopeAxis(axis, s, this.innerWidth, this.innerHeight, this.design)
     }
 
     buildCharacter(chara:CharacterDefinition):SlopeCharacter {
@@ -83,6 +83,7 @@ class SlopeAxis extends Axis {
                 .attr("text-anchor", "start")
                 .attr("x", annotation.offset.left)
                 .attr("y", annotation.offset.top + this.height * this.annotationPosition(annotation.anchor) + 40)
+                .attr("font-family", this.design.font.family)
 
         }
 

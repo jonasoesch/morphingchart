@@ -22,12 +22,14 @@ export abstract class Axis {
     constructor(axis:AxisDefinition, 
         stage:d3.Selection<any,any,any,any>, 
         width:number, 
-        height:number) {
+        height:number,
+        design:Design) {
         this.stage = stage
         this.width = width
         this.height = height
         this.field = axis.field
         this.ticks = valOrDefault(axis.ticks, null)
+        this.design = design
         this.buildAxis(axis) 
     }
 

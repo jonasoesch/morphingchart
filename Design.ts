@@ -1,8 +1,10 @@
-export class Design {
+import {DesignDefinition} from "./Definitions"
+import {valOrDefault, overwriteDefaults} from "./Helpers"
 
+export class Design {
     font = {
         color: "#222",
-        face:"Fira Sans",
+        family:"Fira Sans",
         size: 12
     }
 
@@ -17,4 +19,12 @@ export class Design {
         color: "#222",
         weight: 3
     }
+
+    constructor(definition?:DesignDefinition) {
+        if(definition) {
+            this.margin = overwriteDefaults(this.margin, definition.margin) 
+            this.font = overwriteDefaults(this.font, definition.font) 
+        }
+    }
 }
+
