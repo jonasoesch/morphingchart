@@ -120,8 +120,9 @@ class StackedTimeseriesAxis extends Axis {
             .attr("class", "axis-label")
             .text(annotation.name)
             .attr("text-anchor", "start")
-            .attr("x", annotation.offset.left - 20)
-            .attr("y", annotation.offset.top + this.height * this.annotationPosition(annotation.anchor) + 60)
+            .attr("x", annotation.offset.left)
+            .attr("y", annotation.offset.top)
+            .attr("fill", this.design.font.color)
             .attr("font-family", this.design.font.family)
     }
 

@@ -79,9 +79,9 @@ class TimeseriesAxis extends Axis {
             .attr("class", "axis-label")
             .text(annotation.name)
             .attr("text-anchor", "start")
-            .attr("x", annotation.offset.left - 20)
-            .attr("y", annotation.offset.top-20)
-            .attr("fill", "#000")
+            .attr("x", annotation.offset.left - 40)
+            .attr("y", annotation.offset.top-40)
+            .attr("fill", this.design.font.color)
             .attr("font-family", this.design.font.family)
     }
 
