@@ -196,6 +196,7 @@ export abstract class Chart implements Drawable {
     characterStage(name:string):d3.Selection<any, any, any, any> {
         return this.stage.append("g")
         .attr("id", `character-${name}`)
+        .attr("class", `character`)
         .attr("transform", `translate(${this.design.margin.left}, ${this.design.margin.top})`) 
     }
 

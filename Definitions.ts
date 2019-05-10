@@ -57,6 +57,7 @@ export interface AnnotationDefinition extends Named {
     name:string
     offset?:OffsetDefinition
     anchor?:string
+    class?:string
 }
 
 export interface OffsetDefinition {

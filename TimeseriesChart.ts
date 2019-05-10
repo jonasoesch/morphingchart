@@ -128,6 +128,7 @@ class TimeseriesCharacter extends Character {
             .append("text")
             .text(annotation.name)
             .attr("fill", this.color)
+            .attr("class", annotation.class)
             .attr("y", this.annotationY(annotation))
             .attr("x",this.annotationX(annotation))
     }

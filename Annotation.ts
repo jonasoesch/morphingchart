@@ -4,10 +4,12 @@ export class Annotation {
     name:string
     offset:{top:number, left:number}
     anchor:string
+    class:string
     constructor(definition:AnnotationDefinition) {
         this.name = definition.name
         this.offset = overwriteDefaults({top: 0, left: 0}, definition["offset"])
         this.anchor = valOrDefault(definition["anchor"], "end") 
+        this.class = valOrDefault(definition.class, undefined)
     }
 
 }
