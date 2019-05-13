@@ -69,6 +69,23 @@ class TimeseriesAxis extends Axis {
         if(this.name === "x") {
             this.stage.attr("transform", `translate(0, ${this.height})`) 
         }
+
+        if(this.name === "y") {
+            this.stage.selectAll(".tick line")
+                .attr("x2", this.width)
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 2)
+        }
+
+
+        if(this.name === "x") {
+            this.stage.selectAll(".tick line")
+                .attr("y2", this.height*-1)
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 2)
+        }
+
+
         this.drawAnnotations()
 
     }
