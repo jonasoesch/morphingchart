@@ -260,7 +260,7 @@ export abstract class Chart implements Drawable {
             .style("font-size", `${this.design.font.size*1.4}px`)
 
             text.selectAll("tspan")
-                .data(this.wordWrap(annotation.name, 11))
+                .data(this.wordWrap(annotation.name, 10))
                 .enter()
                 .append("tspan")
                 .attr("y", (d, i) => i*this.design.font.size * 2 )

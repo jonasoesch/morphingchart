@@ -49,9 +49,19 @@ export class MorphingChart extends ChangingChart {
 
      draw() {
         this.hide()
+        this.drawCharacters()
+        this.drawScene()
+    }
+
+    drawCharacters() {
+        this.hide()
         this.characters.forEach( c => c.atPosition(this.position).draw() )
-        this.axes.forEach(a => a.atPosition(this.position).draw())
         this.stage.attr("transform", `translate(${this.coordinates.left}, ${this.coordinates.top})`)
+    }
+
+
+    drawScene() {
+        this.axes.forEach(a => a.atPosition(this.position).draw())
     }
 
   

@@ -5,7 +5,7 @@ export class Design {
     font = {
         color: "#222",
         family:"Fira Sans",
-        size: 12
+        size: 10
     }
 
     margin = {
