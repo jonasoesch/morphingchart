@@ -1,6 +1,7 @@
 import {Chart} from "./Chart"
 import {Drawable} from "./Drawable"
 import {Design} from "./Design"
+import {Logger} from "./Logger"
 
 export interface Named {
     name:string
@@ -98,4 +99,18 @@ export interface StepDefinition {
 export interface DesignDefinition {
     margin?: {left?:number, top?:number, right?:number, bottom?:number}
     font?: {color?:string, family?:string, size?:number}
+}
+
+export interface FormDefinition {
+        name:string,
+        questions:QuestionDefinition[]
+        nextPage:string
+        //logger:Logger
+}
+
+export interface QuestionDefinition {
+    name:string,
+    kind:string,
+    question:string,
+    answers?: string[]
 }
