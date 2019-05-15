@@ -31,9 +31,19 @@ export abstract class Director {
         setInterval(() => this.save(), 5 * 1000);
 
         // Initialize
-        d3.select("body").style("height", this.storyboard[this.storyboard.length-1].from + window.innerHeight + window.innerHeight * 2 / 3)
+        d3.select("body").style("height", this.pageHeight())
         this.drawAll(window.scrollY)
         //setInterval(() => this.alive(), 20 * 1000)
+    }
+
+
+    pageHeight():number {
+        let storyLen = this.storyboard[this.storyboard.length-1].from
+        if (storyLen < 0) {
+            return window.innerHeight 
+        } else {
+            return storyLen + window.innerHeight + window.innerHeight * 2 / 3
+        }
     }
 
 

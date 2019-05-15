@@ -48,7 +48,6 @@ export class Logger {
 
     /**
      * Generate a (hopefully) unique ID.
-     * TODO: This should rather be an ID recieved from Qualtrics
      **/
     private uuid() {
         return Date.now() + "-" + Math.random().toString(36).replace(";", "a").replace("=", "b") 
@@ -178,8 +177,6 @@ export class Logger {
     public send() {
         if(this.messages.length === 0) {return}
         const body = this.toString()
-        console.log(body)
-        //fetch('https://www.jonasoesch.ch/mortality/', {
         fetch("__API_URL__"+"log", {
             method: 'POST',
             headers: {

@@ -9,13 +9,15 @@ export class Form implements Drawable {
     questions:Question[]
     description:string
     nextPage:string
-    //logger:Logger
+    logger:Logger
+    top:number
 
     constructor(definition:FormDefinition) {
         this.name = definition.name
         this.questions = []
         this.nextPage = definition.nextPage
-        //this.logger = definition.logger
+        this.logger = definition.logger
+        this.top = definition.top
         definition.questions.forEach(qDef => {
             if(qDef.kind === "text") {
                 this.questions.push(new TextQuestion(qDef))
@@ -29,7 +31,7 @@ export class Form implements Drawable {
     draw() {
         let form = d3.select(`#${this.name}`)
             .style("height", window.innerHeight * 2 / 3)
-            .style("top", 1110 + window.innerHeight)
+            .style("top", this.top + window.innerHeight)
             .append("div").attr("class", "form")
 
         this.questions.forEach( q => q.drawInto(form) )
@@ -55,13 +57,12 @@ export class Form implements Drawable {
 
     format(answers:string[]):string {
         let out = ""
-        /**
         out = out + this.logger.wrap( Date.now().toString()) + "," // Timestamp
         out = out + this.logger.wrap( this.logger.url ) + "," // URL
         out = out + this.logger.wrap( this.logger.user ) + "," // User ID from cookie
         out = out + this.logger.wrap( this.logger.session ) + "," // Session ID
         answers.forEach( a => { out = out + this.logger.wrap(a) + "," } )
-        **/
+        out = out + "\n"
         return out
     }
 

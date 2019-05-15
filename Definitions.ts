@@ -105,7 +105,8 @@ export interface FormDefinition {
         name:string,
         questions:QuestionDefinition[]
         nextPage:string
-        //logger:Logger
+        logger:Logger
+        top:number
 }
 
 export interface QuestionDefinition {
