@@ -2,7 +2,7 @@ import * as d3 from 'd3'
 import {Drawable} from './Drawable'
 import {Logger} from "./Logger"
 import {FormDefinition, QuestionDefinition} from "./Definitions"
-
+import {Message} from "./Message"
 
 export class Form implements Drawable {
     name:string
@@ -20,10 +20,10 @@ export class Form implements Drawable {
         this.top = definition.top
         definition.questions.forEach(qDef => {
             if(qDef.kind === "text") {
-                this.questions.push(new TextQuestion(qDef))
+                this.questions.push(new TextQuestion(qDef, this.logger))
             }
             if(qDef.kind === "choice") {
-                this.questions.push(new ChoiceQuestion(qDef))
+                this.questions.push(new ChoiceQuestion(qDef, this.logger))
             }
         })
     }
@@ -45,6 +45,7 @@ export class Form implements Drawable {
                     alert(e.message)
                 }
             })
+
     }
 
 
@@ -55,18 +56,6 @@ export class Form implements Drawable {
     }
 
 
-    format(answers:string[]):string {
-        let out = ""
-        out = out + this.logger.wrap( Date.now().toString()) + "," // Timestamp
-        out = out + this.logger.wrap( this.logger.url ) + "," // URL
-        out = out + this.logger.wrap( this.logger.user ) + "," // User ID from cookie
-        out = out + this.logger.wrap( this.logger.session ) + "," // Session ID
-        answers.forEach( a => { out = out + this.logger.wrap(a) + "," } )
-        out = out + "\n"
-        return out
-    }
-
-
     submit() {
         let answers = this.getAnswers()
         answers.forEach( a => { 
@@ -74,27 +63,22 @@ export class Form implements Drawable {
                 throw new Error("All fields must be completed") // don't send if answers are empty
             }
         })         
-        const body = this.format(answers)
-        fetch("__API_URL__"+"form", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain',
-            },
-            body,
+
+        answers.forEach(a => {
+            this.logger.messages.push(new Message({
+                user: this.logger.user,
+                session: this.logger.session,
+                name: `@answer: ${this.name}`,
+                absolutePosition: -1,
+                answer: a
+            })) 
         })
+
+        this.logger.submit()
             .then( (response) => {
-                if (!response.ok) {
-                    throw new Error("The server is doing funny things. Please try again.") 
-                }
-                return response.text()
-            })
-            .then( (text) => {
-                if(text !== "OK") {
-                    throw new Error("The server is doing funny things. Please try again.") 
-                }
                 window.location.href = this.nextPage
             })
-    }
+        }
 
 
     hide() {
@@ -112,9 +96,11 @@ export class Form implements Drawable {
 abstract class Question {
     name:string
     question:string
-    constructor(definition:QuestionDefinition) {
+    logger:Logger
+    constructor(definition:QuestionDefinition, logger:Logger) {
         this.name = definition.name 
         this.question = definition.question
+        this.logger = logger
     }
     abstract drawInto(element:d3.Selection<any, any, any, any>):void
     abstract getAnswerFrom(element:d3.Selection<any, any, any, any>):string
@@ -122,12 +108,17 @@ abstract class Question {
 
 class TextQuestion extends Question {
     drawInto(element:d3.Selection<any, any, any, any>) {
+        let logger = this.logger
+
         element.append("label")
             .text(this.question)
         element.append("textarea")
             .attr("type" ,"text")
             .attr("placeholder", "Your answer…")
             .attr("name", this.name) 
+            .on("input", function() {
+                logger.typing(d3.select(this).node().value)
+            })
     }
 
     getAnswerFrom(element:d3.Selection<any, any, HTMLInputElement, any>) {
@@ -137,8 +128,8 @@ class TextQuestion extends Question {
 
 class ChoiceQuestion extends Question {
     answers:string[]
-    constructor(definition:QuestionDefinition) {
-        super(definition) 
+    constructor(definition:QuestionDefinition, logger:Logger) {
+        super(definition, logger) 
         this.answers = definition.answers
     }
     drawInto(element:d3.Selection<any, any, any, any>) {

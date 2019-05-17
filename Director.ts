@@ -37,15 +37,25 @@ export abstract class Director {
     }
 
 
+    get storyLength() {
+        let len =  this.storyboard[this.storyboard.length-1].from
+        if (len < 0) {
+            return 0
+        } else {
+            return len
+        }
+    }
     pageHeight():number {
-        let storyLen = this.storyboard[this.storyboard.length-1].from
-        if (storyLen < 0) {
+        if (this.storyLength < 0) {
             return window.innerHeight 
         } else {
-            return storyLen + window.innerHeight + window.innerHeight * 2 / 3
+            return this.storyLength + window.innerHeight + window.innerHeight * 2 / 3
         }
     }
 
+    get absolutePosition() {
+        return this.lastScrollTop / this.storyLength
+    }
 
 
     /**
@@ -145,7 +155,6 @@ export abstract class Director {
      **/
     protected abstract draw(chart:Drawable, howFar:number):void
 
-
         hide(chart:Drawable) {
             chart.hide() 
         }
@@ -179,7 +188,7 @@ export class SuperposedDirector extends Director {
     }
 
     protected draw(chart:Drawable, howFar:number) {
-        this.logger.animation(chart.name, howFar)
+        this.logger.animation(chart.name, howFar, this.absolutePosition)
         if(chart instanceof MorphingChart || chart instanceof FadingChart) {
             chart.atPosition(howFar).draw() 
         } else {
@@ -217,7 +226,7 @@ export class JuxtaposedDirector extends Director {
 
 
     protected draw(chart:Drawable, howFar:number) {
-        this.logger.animation(chart.name, howFar)
+        this.logger.animation(chart.name, howFar, this.absolutePosition)
         if(chart instanceof MorphingChart || chart instanceof FadingChart) {
             chart.atPosition(howFar).drawCharacters() 
         } else {
@@ -239,7 +248,7 @@ export class JuxtaposedDirector extends Director {
         }
     }
     protected drawMorphingChart(chart:Drawable, howFar:number) {
-        this.logger.animation(chart.name, howFar)
+        this.logger.animation(chart.name, howFar, this.absolutePosition)
         if(chart instanceof MorphingChart || chart instanceof FadingChart) {
             chart.atPosition(howFar).drawCharacters() 
         }

@@ -115,3 +115,12 @@ export interface QuestionDefinition {
     question:string,
     answers?: string[]
 }
+
+export interface MessageDefinition {
+    user:string
+    session:string
+    name:string
+    absolutePosition:number
+    relativePosition?:number
+    answer?:string
+}

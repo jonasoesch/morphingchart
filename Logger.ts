@@ -1,3 +1,4 @@
+import {Message} from "./Message"
 /**
  * This class contains the code necessary to generate log-entries.
  * It is used for logging draw-calls as well as responses from the survey.
@@ -6,28 +7,15 @@ export class Logger {
     messages:Message[]
     session:string
     user:string
-    ua:string
-    url:string
-    screenWidth: number
-    screenHeight: number;
-    windowWidth: number;
-    windowHeight: number;
-    pixelRatio: number
 
     waitingForActionSince:number
 
     constructor() {
-        this.ua = window.navigator.userAgent
-        this.screenWidth = window.screen.width
-        this.screenHeight = window.screen.height
-        this.url = window.location.href
-        this.pixelRatio = window.devicePixelRatio
         this.user = this.getUser()
         this.session = this.uuid()
         this.messages = []
 
         this.waitingForActionSince = 0
-
 
         this.init()
         this.send()
@@ -71,15 +59,26 @@ export class Logger {
     /**
      * Records a draw call, typically from a director.
      **/
-    public animation(name:string, position:number) {
+    public animation(name:string, relativePosition:number, absolutePosition:number) {
         this.waitIsOver()
-        this.messages.push({
-            timestamp: Date.now(),
-            windowWidth: window.innerWidth,
-            windowHeight: window.innerHeight,
+        this.messages.push(new Message({
+            user: this.user,
+            session: this.session,
             name: name,
-            position: position,
-        }) 
+            relativePosition: relativePosition,
+            absolutePosition: absolutePosition,
+        })) 
+    }
+
+    public typing(text:string) {
+        this.waitIsOver()
+        this.messages.push(new Message({
+            user: this.user,
+            session: this.session,
+            name: `@typing: ${text}`,
+            relativePosition: -1,
+            absolutePosition: -1,
+        })) 
     }
 
     /**
@@ -88,24 +87,22 @@ export class Logger {
      **/
     public alive() {
         if(!this.waitMore()) {return}
-        this.messages.push({
-            timestamp: Date.now(),
-            windowWidth: window.innerWidth,
-            windowHeight: window.innerHeight,
-            name: '@alive',
-            position: -1,
-        }) 
+        this.messages.push(new Message({
+            user: this.user,
+            session: this.session,
+            name: "@alive",
+            absolutePosition: -1
+        })) 
     }
 
 
     public error(message:string) {
-        this.messages.push({
-            timestamp: Date.now(),
-            windowWidth: window.innerWidth,
-            windowHeight: window.innerHeight,
+        this.messages.push(new Message({
+            user: this.user,
+            session: this.session,
             name: `@error: ${message}`,
-            position: -1,
-        }) 
+            absolutePosition: -1,
+        })) 
     }
 
     private waitMore() {
@@ -121,82 +118,59 @@ export class Logger {
      * Records that the experiment has been loaded.
      **/
     public init() {
-        this.messages.push({
-            timestamp: Date.now(),
-            windowWidth: window.innerWidth,
-            windowHeight: window.innerHeight,
+        this.messages.push(new Message({
+            user: this.user,
+            session: this.session,
             name: '@init',
-            position: -1,
-        }) 
+            absolutePosition: -1,
+        })) 
     }
 
 
     /**
      * Formats the log-entries for draw-calls properly:
-     * * Timestamp
-     * * URL
-     * * User ID
-     * * Session ID
-     * * User Agent String
-     * * Screen width
-     * * Screen height
-     * * window width
-     * * Window height
-     * * Pixel ratio (pixel density)
-     * * Name of the Drawable that is being rendered
-     * * Relative position that is being rendered
      **/
     public toString() {
         // timestamp, user, session, scroll 
         let out = ""
         this.messages.forEach( (m) => {
-            out = out + this.wrap( m.timestamp.toString()       ) + ","
-            out = out + this.wrap( this.url                     ) + ","
-            out = out + this.wrap( this.user                    ) + ","
-            out = out + this.wrap( this.session                 ) + ","
-            out = out + this.wrap( this.ua                      ) + ","
-            out = out + this.wrap( this.screenWidth.toString()  ) + ","
-            out = out + this.wrap( this.screenHeight.toString() ) + ","
-            out = out + this.wrap( m.windowWidth.toString()     ) + ","
-            out = out + this.wrap( m.windowHeight.toString()    ) + ","
-            out = out + this.wrap( this.pixelRatio.toString()   ) + ","
-            out = out + this.wrap( m.name                       ) + ","
-            out = out + this.wrap( m.position.toString()        ) + "\n"
+            out = out + m.toString()
         })
         return out
     }
 
 
-    public wrap(str:string, into='"') {
-        return  into+str+into
-    }
-
     /**
      * Sends the latest records to the server removes them from the storage.
      **/
-    public send() {
-        if(this.messages.length === 0) {return}
+    public send(){
+        if(this.messages.length === 0) {return Promise.reject()}
         const body = this.toString()
-        fetch("__API_URL__"+"log", {
+        return fetch("__API_URL__"+"form", {
             method: 'POST',
             headers: {
                 'Content-Type': 'text/plain',
             },
-            body,
-        });
-        this.messages = []
+            body
+        }).then((resp) => {
+            this.messages = []
+            return resp
+        })
     }
 
+    public submit() {
+        return this.send()
+            .then( (response) => {
+                if (!response.ok) {
+                    throw new Error("The server is doing funny things. Please try again.") 
+                }
+                return response.text()
+            })
+            .then( (text) => {
+                if(text !== "OK") {
+                    throw new Error("The server is doing funny things. Please try again.") 
+                };
+                return true
+            })
+    }
 }
-
-/**
- * Structure of a record.
- **/
-interface Message {
-    timestamp: number
-    windowWidth: number
-    windowHeight: number
-    name:string
-    position:number
-}
-
