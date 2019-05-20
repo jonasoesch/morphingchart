@@ -12,10 +12,13 @@ export abstract class Director {
     logTimer:Date = new Date()
     lastScrollTop:number
     logger:Logger
+    name:string
 
-    constructor(stepDefs:StepDefinition[]) {
+
+    constructor(stepDefs:StepDefinition[], name:string) {
         this.lastScrollTop = window.scrollY;
         this.logger = new Logger()
+        this.name = name
 
         this.storyboard = this.buildSteps(stepDefs)
 

@@ -3,20 +3,21 @@ import {Drawable} from './Drawable'
 import {Logger} from "./Logger"
 import {FormDefinition, QuestionDefinition} from "./Definitions"
 import {Message} from "./Message"
+import {flows, urlmap} from "../flows"
 
 export class Form implements Drawable {
     name:string
     questions:Question[]
     description:string
-    nextPage:string
     logger:Logger
     top:number
+    currentPage:string
 
     constructor(definition:FormDefinition) {
         this.name = definition.name
         this.questions = []
-        this.nextPage = definition.nextPage
         this.logger = definition.logger
+        this.currentPage = definition.currentPage
         this.top = definition.top
         definition.questions.forEach(qDef => {
             if(qDef.kind === "text") {
@@ -48,6 +49,27 @@ export class Form implements Drawable {
 
     }
 
+    get nextPage() {
+        let nextPage:string = "home"
+        for (let i =0; i<this.flow.length; i++) {
+            if(this.flow[i] === this.currentPage) {
+                nextPage = this.flow[i+1]
+            }
+        }
+        if(nextPage === undefined) {nextPage = "home"}
+        return (urlmap as any)[nextPage] + "?flow=" + this.flowName
+    }
+
+    get flowName():string {
+        let urlString = window.location.href
+        let url = new URL(urlString)
+        let flow = url.searchParams.get("flow");
+        return flow
+    }
+
+    get flow():string[] {
+        return (flows as any)[this.flowName]
+    }
 
     getAnswers():string[] {
         let form = d3.select(`#${this.name}`)
@@ -78,7 +100,7 @@ export class Form implements Drawable {
             .then( (response) => {
                 window.location.href = this.nextPage
             })
-        }
+    }
 
 
     hide() {
@@ -103,7 +125,7 @@ abstract class Question {
         this.logger = logger
     }
     abstract drawInto(element:d3.Selection<any, any, any, any>):void
-    abstract getAnswerFrom(element:d3.Selection<any, any, any, any>):string
+        abstract getAnswerFrom(element:d3.Selection<any, any, any, any>):string
 }
 
 class TextQuestion extends Question {
