@@ -73,7 +73,6 @@ class TimeseriesAxis extends Axis {
         if(this.name === "y") {
             this.stage.selectAll(".tick line")
                 .attr("x2", this.width)
-                .attr("stroke", "#fff")
                 .attr("stroke-width", 2)
         }
 
@@ -81,7 +80,6 @@ class TimeseriesAxis extends Axis {
         if(this.name === "x") {
             this.stage.selectAll(".tick line")
                 .attr("y2", this.height*-1)
-                .attr("stroke", "#fff")
                 .attr("stroke-width", 2)
         }
 
