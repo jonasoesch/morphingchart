@@ -105,6 +105,15 @@ export class Logger {
         })) 
     }
 
+    public message(message:string) {
+        this.messages.push(new Message({
+            user: this.user,
+            session: this.session,
+            name: `@message: ${message}`,
+            absolutePosition: -1,
+        })) 
+    }
+
     private waitMore() {
         this.waitingForActionSince = this.waitingForActionSince + 20
         return this.waitingForActionSince < 120 // don't wait more than 2 min
