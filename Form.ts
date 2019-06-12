@@ -158,13 +158,15 @@ class ChoiceQuestion extends Question {
     }
     drawInto(element:d3.Selection<any, any, any, any>) {
         element.append("label")
+            .attr("class", "question-label")
             .text(this.question)
         this.answers.forEach( o => {
-            element.append("input")  
+            let line = element.append("p")
+            line.append("input")  
                 .attr("type", "radio")
                 .attr("name", this.name)
                 .attr("value", o)
-            element.append("label")
+            line.append("label")
                 .attr("class", "radio-label")
                 .text(o)
         })
