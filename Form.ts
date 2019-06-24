@@ -58,11 +58,9 @@ export class Form implements Drawable {
             }
         }
         nextPage = valOrDefault(nextPage, "home")
-        return urlWithParameter(
-            urlWithParameter(
-                (urlmap as any)[nextPage], 
-                "user", getUrlParameter("user")), 
-            "flow", this.flowName)
+        let url = urlWithParameter((urlmap as any)[nextPage], "user", getUrlParameter("user"))
+        url = urlWithParameter(url, "flow", this.flowName)
+        return url
     }
 
     get flowName():string {
