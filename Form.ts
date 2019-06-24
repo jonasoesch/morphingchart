@@ -4,7 +4,7 @@ import {Logger} from "./Logger"
 import {FormDefinition, QuestionDefinition} from "./Definitions"
 import {Message} from "./Message"
 import {flows, urlmap} from "../flows"
-import {valOrDefault} from "./Helpers"
+import {valOrDefault, getUrlParameter, urlWithParameter} from "./Helpers"
 
 export class Form implements Drawable {
     name:string
@@ -58,14 +58,15 @@ export class Form implements Drawable {
             }
         }
         nextPage = valOrDefault(nextPage, "home")
-        return (urlmap as any)[nextPage] + "?flow=" + this.flowName
+        return urlWithParameter(
+            urlWithParameter(
+                (urlmap as any)[nextPage], 
+                "user", getUrlParameter("user")), 
+            "flow", this.flowName)
     }
 
     get flowName():string {
-        let urlString = window.location.href
-        let url = new URL(urlString)
-        let flow = url.searchParams.get("flow");
-        return valOrDefault(flow, "")
+        return getUrlParameter("flow")
     }
 
     get flow():string[] {

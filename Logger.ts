@@ -1,4 +1,5 @@
 import {Message} from "./Message"
+import {valOrDefault, getUrlParameter, setUrlParameter} from "./Helpers"
 /**
  * This class contains the code necessary to generate log-entries.
  * It is used for logging draw-calls as well as responses from the survey.
@@ -26,12 +27,10 @@ export class Logger {
      * from a cookie. Otherwise it returns a new ID and stores it in a cookie.
      **/
     getUser() {
-        if(!this.getCookie('user')) {
-            console.log("nope", this.getCookie('user'))
-            this.setCookie('user', this.uuid())
-        } 
-        console.log("yep", this.getCookie('user'))
-        return this.getCookie('user') 
+        if(getUrlParameter('user') == "") {
+            setUrlParameter('user', this.uuid())
+        }
+        return getUrlParameter('user') 
     }
 
     /**
@@ -55,6 +54,7 @@ export class Logger {
     private setCookie(key:string, value:string) {
         document.cookie = `${key}=${value}; expires=Fri, 31 Dec 9999 23:59:59 GMT"`; 
     }
+
 
     /**
      * Records a draw call, typically from a director.
