@@ -40,7 +40,7 @@ export function getUrlParameter(key:string) {
 
 export function setUrlParameter(key:string, value:string) {
     let urlString = window.location.href
-    window.location.href =  urlWithParameter(urlString, key, value)
+    history.pushState('', '', urlWithParameter(urlString, key, value))
 }
 
 export function urlWithParameter(urlString:string, key:string, value:string) {
