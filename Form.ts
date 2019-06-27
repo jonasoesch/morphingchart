@@ -129,13 +129,16 @@ abstract class Question {
         abstract getAnswerFrom(element:d3.Selection<any, any, any, any>):string
 }
 
-class TextQuestion extends Question {
+export class TextQuestion extends Question {
     drawInto(element:d3.Selection<any, any, any, any>) {
         let logger = this.logger
 
-        element.append("label")
+        let container = element.append("p").attr("class", "question")
+
+        container.append("label")
+            .attr("class", "question-label")
             .text(this.question)
-        element.append("textarea")
+        container.append("textarea")
             .attr("type" ,"text")
             .attr("placeholder", "Your answer…")
             .attr("name", this.name) 
@@ -149,18 +152,23 @@ class TextQuestion extends Question {
     }
 }
 
-class ChoiceQuestion extends Question {
+export class ChoiceQuestion extends Question {
     answers:string[]
     constructor(definition:QuestionDefinition, logger:Logger) {
         super(definition, logger) 
         this.answers = definition.answers
     }
     drawInto(element:d3.Selection<any, any, any, any>) {
-        element.append("label")
+
+
+        let container = element.append("p").attr("class", "question")
+
+        container.append("label")
             .attr("class", "question-label")
             .text(this.question)
+
         this.answers.forEach( o => {
-            let line = element.append("p")
+            let line = container.append("p")
             line.append("input")  
                 .attr("type", "radio")
                 .attr("name", this.name)
