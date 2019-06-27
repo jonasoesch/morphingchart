@@ -72,7 +72,7 @@ export class Form implements Drawable {
         return  valOrDefault(flow, [])
     }
 
-    getAnswers():string[] {
+    getAnswers():{name:string, text:string}[] {
         let form = d3.select(`#${this.name}`)
         let answers = this.questions.map( q => q.getAnswerFrom(form) )
         return answers
@@ -82,7 +82,7 @@ export class Form implements Drawable {
     submit() {
         let answers = this.getAnswers()
         answers.forEach( a => { 
-            if(a === ""){
+            if(a.text === ""){
                 throw new Error("All fields must be completed") // don't send if answers are empty
             }
         })         
@@ -91,9 +91,9 @@ export class Form implements Drawable {
             this.logger.messages.push(new Message({
                 user: this.logger.user,
                 session: this.logger.session,
-                name: `@answer: ${this.name}`,
+                name: `@answer: ${a.name}`,
                 absolutePosition: -1,
-                answer: a
+                answer: a.text
             })) 
         })
 
@@ -126,7 +126,7 @@ abstract class Question {
         this.logger = logger
     }
     abstract drawInto(element:d3.Selection<any, any, any, any>):void
-        abstract getAnswerFrom(element:d3.Selection<any, any, any, any>):string
+        abstract getAnswerFrom(element:d3.Selection<any, any, any, any>):{name:string, text:string}
 }
 
 export class TextQuestion extends Question {
@@ -148,7 +148,7 @@ export class TextQuestion extends Question {
     }
 
     getAnswerFrom(element:d3.Selection<any, any, HTMLInputElement, any>) {
-        return (element.select(`textarea[name="${this.name}"]`).node() as HTMLInputElement).value
+        return {name: this.name, text: (element.select(`textarea[name="${this.name}"]`).node() as HTMLInputElement).value}
     }
 }
 
@@ -185,6 +185,6 @@ export class ChoiceQuestion extends Question {
                 out =  (this as HTMLInputElement).value 
             }   
         })
-        return out
+        return {name: this.name, text: out}
     }
 }
