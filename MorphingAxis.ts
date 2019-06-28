@@ -32,10 +32,21 @@ export class MorphingAxis extends ChangingAxis {
         }
         let axis = this.from.getAxis(s, t)
 
+
+
         this.stage
             .append("g")
             .attr("transform", this.to.translate())
             .call(axis)
+
+
+        if(this.from.name === "x") {
+            this.stage.selectAll(".tick line")
+                .attr("y2", this.from.height*-1)
+                .attr("stroke-width", 2)
+        }
+
+        this.stage.lower()
     }
 
 }

@@ -95,10 +95,12 @@ class StackedTimeseriesAxis extends Axis {
 
        this.stage.attr("transform", this.translate()) 
 
-        if(this.name === "y") {
+
+
+        if(this.name === "x") {
             this.stage.selectAll(".tick line")
-                .attr("x2", this.width)
-                .attr("stroke-dasharray", 4)
+                .attr("y2", this.height*-1)
+                .attr("stroke-width", 2)
         }
 
         this.drawAnnotations()
