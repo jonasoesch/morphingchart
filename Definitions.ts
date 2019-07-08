@@ -28,6 +28,7 @@ export interface AxisDefinition extends Named {
     // This will be used to access the corresponding property in the CSV when drawing a character
     field?:string
     ticks?:any[]
+    tickFormat?:string
     annotations?:AnnotationDefinition[]
 }
 

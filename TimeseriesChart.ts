@@ -51,16 +51,17 @@ class TimeseriesAxis extends Axis {
         }
     }
 
-    getAxis(scale:any, ticks?:any) {
+    getAxis(scale:any, ticks?:any, tickFormat?:string) {
         let axis:d3.Axis<any>
         if(this.name === "y") {axis = d3.axisLeft(scale).tickArguments([6]);}
         if(this.name === "x") {axis = d3.axisBottom(scale).tickArguments([6]);}
         if(ticks) {axis.tickValues(ticks)}
+        if(tickFormat) {axis.tickFormat(d3.format(tickFormat))}
         return axis
     }
 
     draw() {
-        let axis = this.getAxis(this.scale, this.ticks)
+        let axis = this.getAxis(this.scale, this.ticks, this.tickFormat)
         this.stage.selectAll("*").remove()
         this.stage
             .attr("class", "axis")

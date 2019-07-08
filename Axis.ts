@@ -14,6 +14,7 @@ export abstract class Axis {
     axis:d3.Axis<any>
     position:string
     ticks:any[]
+    tickFormat:string
 
     width:number
     height:number
@@ -29,6 +30,7 @@ export abstract class Axis {
         this.height = height
         this.field = axis.field
         this.ticks = valOrDefault(axis.ticks, null)
+        this.tickFormat = valOrDefault(axis.tickFormat, null)
         this.design = design
         this.buildAxis(axis) 
     }
