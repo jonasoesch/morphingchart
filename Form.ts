@@ -3,7 +3,7 @@ import {Drawable} from './Drawable'
 import {Logger} from "./Logger"
 import {FormDefinition, QuestionDefinition} from "./Definitions"
 import {Message} from "./Message"
-import {flows, urlmap} from "../flows"
+import {flows, urlmap} from "../../../flows"
 import {valOrDefault, getUrlParameter, urlWithParameter} from "./Helpers"
 
 export class Form implements Drawable {
