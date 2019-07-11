@@ -32,7 +32,6 @@ export class Form implements Drawable {
 
     draw() {
         let form = d3.select(`#${this.name}`)
-            .style("height", window.innerHeight * 2 / 3)
             .style("top", this.top + window.innerHeight)
             .append("div").attr("class", "form")
 
@@ -130,6 +129,12 @@ abstract class Question {
 }
 
 export class TextQuestion extends Question {
+    textLength:number
+    constructor(definition:QuestionDefinition, logger:Logger) {
+        super(definition, logger) 
+        this.textLength = valOrDefault(definition.textLength, 260)
+    }
+
     drawInto(element:d3.Selection<any, any, any, any>) {
         let logger = this.logger
 
@@ -140,6 +145,7 @@ export class TextQuestion extends Question {
             .text(this.question)
         container.append("textarea")
             .attr("type" ,"text")
+            .attr("rows", this.rows)
             .attr("placeholder", "Your answer…")
             .attr("name", this.name) 
             .on("input", function() {
@@ -149,6 +155,10 @@ export class TextQuestion extends Question {
 
     getAnswerFrom(element:d3.Selection<any, any, HTMLInputElement, any>) {
         return {name: this.name, text: (element.select(`textarea[name="${this.name}"]`).node() as HTMLInputElement).value}
+    }
+
+    get rows() {
+        return Math.ceil(this.textLength / 130)
     }
 }
 
@@ -169,6 +179,7 @@ export class ChoiceQuestion extends Question {
 
         this.answers.forEach( o => {
             let line = container.append("p")
+                .attr("class", "radio-container")
             line.append("input")  
                 .attr("type", "radio")
                 .attr("name", this.name)

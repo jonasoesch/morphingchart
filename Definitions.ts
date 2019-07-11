@@ -114,6 +114,7 @@ export interface QuestionDefinition {
     name:string,
     kind:string,
     question:string,
+    textLength?:number
     answers?: string[]
 }
 
