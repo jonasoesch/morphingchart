@@ -38,7 +38,7 @@ export class Form implements Drawable {
         this.questions.forEach( q => q.drawInto(form) )
 
         form.append("button")
-            .text("Send answer and advance to the next story")
+            .text(`Send answer and advance to the next page [${valOrDefault(this.nextPagePosition, 0)}/${this.flow.length-2}]`)
             .on('click', () => {
                 try {
                     this.submit()
@@ -49,13 +49,19 @@ export class Form implements Drawable {
 
     }
 
-    get nextPage() {
-        let nextPage:string = "home"
+    get nextPagePosition() {
+        let next = 0
         for (let i =0; i<this.flow.length; i++) {
             if(this.flow[i] === this.currentPage) {
-                nextPage = this.flow[i+1]
+                return i+1 
             }
         }
+        return null
+    }
+
+    get nextPage() {
+        let nextPage:string = "home"
+        nextPage = this.flow[this.nextPagePosition]
         nextPage = valOrDefault(nextPage, "home")
         let url = urlWithParameter((urlmap as any)[nextPage], "user", getUrlParameter("user"))
         url = urlWithParameter(url, "flow", this.flowName)
